@@ -62,7 +62,26 @@ seriesRouter.post('/',(req,res,next)={
     }
 })
 
-
+seriesRouter.post('/:seriesId',(req,res,next)=>{
+    const name=req.body.series.name
+    const description=req.body.series.description
+    if(!name||!description){
+        res.sendStatus(400)
+    }
+    else{
+        const sql=`UPDATE Series SET name=${name} AND description=${description} WHERE id=${req.params.seriesId}`,(err)=>{
+            if(err){
+                next(err)
+            }
+            else{
+                db.get('SELECT * FROM Series WHRER id=$id',{$id:req.params.seriesId},(err,row)=>{
+                    res.send(200).json({series:row})
+                })
+            }
+        }
+        db.run()
+    }
+})
 
 module.exports=seriesRouter
 //open api.js and write seriesRouter=require(./series.js)
